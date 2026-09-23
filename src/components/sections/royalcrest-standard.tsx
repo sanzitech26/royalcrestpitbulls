@@ -1,24 +1,26 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, Crown, Dna, Users, Heart, Handshake } from "lucide-react";
+import { ArrowRight, Crown, Dna, Users, Heart, Handshake, type LucideIcon } from "lucide-react";
 import { IconCircle } from "@/components/ui/icon-circle";
 
-const pillars = [
+const pillars: {
+  icon: LucideIcon;
+  title: string;
+  description: string;
+  linkLabel?: string;
+  href?: string;
+}[] = [
   {
     icon: Dna,
     title: "Bloodlines",
     description:
       "Thoughtfully selected pedigrees and breeding programs to maintain exceptional structure, health, and genetic quality.",
-    linkLabel: "Our Bloodlines",
-    href: "/bloodlines",
   },
   {
     icon: Users,
     title: "Temperament",
     description:
       "We value confident, stable and family-friendly temperaments, raising puppies that integrate well into loving homes.",
-    linkLabel: "Our Approach",
-    href: "/our-dogs",
   },
   {
     icon: Heart,
@@ -105,13 +107,15 @@ export function RoyalCrestStandard() {
                   {title}
                 </h3>
                 <p className="mt-2 text-sm text-ink/70">{description}</p>
-                <Link
-                  href={href}
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-gold uppercase hover:text-gold-light"
-                >
-                  {linkLabel}
-                  <ArrowRight className="size-3.5" />
-                </Link>
+                {href && (
+                  <Link
+                    href={href}
+                    className="mt-4 inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-gold uppercase hover:text-gold-light"
+                  >
+                    {linkLabel}
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                )}
               </div>
             ))}
           </div>

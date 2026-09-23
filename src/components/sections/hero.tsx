@@ -70,15 +70,6 @@ export function Hero() {
               View Available Puppies
               <ArrowRight className="size-4" />
             </Link>
-            <Link
-              href="/our-dogs"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "rounded-full border-ink/25 bg-cream px-6"
-              )}
-            >
-              Meet Our Dogs
-            </Link>
           </div>
 
           <div className="mt-12 flex flex-wrap gap-8">

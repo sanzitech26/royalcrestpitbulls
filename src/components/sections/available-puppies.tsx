@@ -6,7 +6,7 @@ import { PuppyCard } from "@/components/puppy-card";
 import { puppies } from "@/data/puppies";
 import { cn } from "@/lib/utils";
 
-const trustBadges = [
+export const trustBadges = [
   { icon: PawPrint, label: "Health Checked" },
   { icon: ShieldCheck, label: "Up to Date on Vaccines" },
   { icon: Heart, label: "Family Raised" },

@@ -1,27 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import {
-  ArrowRight,
-  Calendar,
-  ChevronDown,
-  Clock,
-  Home,
-  Mail,
-  MapPin,
-  Phone,
-  Plane,
-  Truck,
-} from "lucide-react";
-import { type LucideIcon } from "lucide-react";
+import { ArrowRight, Calendar, Home, MapPin, Plane, Truck } from "lucide-react";
+import { ContactForm } from "@/components/contact-form";
+import { StepIcon } from "@/components/step-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { IconCircle } from "@/components/ui/icon-circle";
+import { contactInfo } from "@/data/site";
 import { cn } from "@/lib/utils";
-
-const contactInfo = [
-  { icon: Phone, label: "Call Us", value: "+1 (555) 123-4567" },
-  { icon: Mail, label: "Email Us", value: "info@royalcrestpitbulls.com" },
-  { icon: Clock, label: "Our Hours", value: "Mon - Sat: 9AM - 7PM", extra: "Sunday: By Appointment" },
-];
 
 const shippingSteps = [
   {
@@ -46,20 +31,6 @@ const shippingSteps = [
   },
 ];
 
-const inputClasses =
-  "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-gold focus:outline-none";
-
-function StepIcon({ icon, index }: { icon: LucideIcon; index: number }) {
-  return (
-    <span className="relative z-10 shrink-0">
-      <IconCircle icon={icon} className="border-gold-light/40 bg-charcoal text-gold-light" />
-      <span className="absolute -top-1.5 -left-1.5 flex size-5 items-center justify-center rounded-full bg-gold text-[10px] font-bold text-charcoal">
-        {index}
-      </span>
-    </span>
-  );
-}
-
 export function ContactShipping() {
   return (
     <section className="grid lg:grid-cols-2">
@@ -81,37 +52,7 @@ export function ContactShipping() {
               soon as possible.
             </p>
 
-            {/* ponytail: no backend wired yet (Supabase unused so far) — static form, submit button is inert until that lands */}
-            <form className="mt-8 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <input type="text" placeholder="Full Name *" className={inputClasses} />
-                <input type="email" placeholder="Email Address *" className={inputClasses} />
-              </div>
-              <div className="relative">
-                <select defaultValue="" className={cn(inputClasses, "appearance-none text-ink/70")}>
-                  <option value="" disabled>
-                    Subject *
-                  </option>
-                  <option value="puppies">Available Puppies</option>
-                  <option value="breeding">Breeding Program</option>
-                  <option value="shipping">Shipping &amp; Delivery</option>
-                  <option value="other">Other</option>
-                </select>
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-ink/40" />
-              </div>
-              <textarea
-                placeholder="Your Message *"
-                rows={4}
-                className={cn(inputClasses, "resize-none")}
-              />
-              <button
-                type="button"
-                className={cn(buttonVariants({ size: "lg" }), "w-full rounded-full")}
-              >
-                Send Message
-                <ArrowRight className="size-4" />
-              </button>
-            </form>
+            <ContactForm className="mt-8" />
           </div>
 
           <div className="relative aspect-[3/4] overflow-hidden rounded-2xl">
@@ -180,7 +121,7 @@ export function ContactShipping() {
             <div className="absolute top-6 bottom-6 left-6 w-px bg-white/15" />
             {shippingSteps.map(({ icon, title, description }, i) => (
               <div key={title} className="relative flex items-start gap-4">
-                <StepIcon icon={icon} index={i + 1} />
+                <StepIcon icon={icon} index={i + 1} onDark />
                 <div className="pt-2.5">
                   <h3 className="font-semibold text-white">{title}</h3>
                   <p className="mt-1 max-w-sm text-sm text-white/60">{description}</p>

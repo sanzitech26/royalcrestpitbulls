@@ -1,38 +1,7 @@
-import Link from "next/link";
-import { ArrowRight, Heart, PawPrint, ShieldCheck, Trophy } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Heart, PawPrint, ShieldCheck, Trophy } from "lucide-react";
 import { IconCircle } from "@/components/ui/icon-circle";
-import { cn } from "@/lib/utils";
-
-type Ancestor = { name: string; children?: [Ancestor, Ancestor] };
-
-const titanLine: Ancestor = {
-  name: "RoyalCrest Titan",
-  children: [
-    {
-      name: "King Draco",
-      children: [{ name: "Grand Champion Ace" }, { name: "Bella Storm" }],
-    },
-    {
-      name: "Luna Belle",
-      children: [{ name: "Titan's Legacy" }, { name: "Queen Nova" }],
-    },
-  ],
-};
-
-const zoeLine: Ancestor = {
-  name: "RoyalCrest Zoe",
-  children: [
-    {
-      name: "Major Blaze",
-      children: [{ name: "Iron King" }, { name: "Skylar" }],
-    },
-    {
-      name: "Venus",
-      children: [{ name: "Champ's Ruby" }, { name: "Miss Dior" }],
-    },
-  ],
-};
+import { PedigreeTree } from "@/components/pedigree-tree";
+import { titanLine, zoeLine } from "@/data/bloodlines";
 
 const philosophyFeatures = [
   {
@@ -57,42 +26,6 @@ const philosophyFeatures = [
   },
 ];
 
-function PedigreeNode({ name, sub }: { name: string; sub?: string }) {
-  return (
-    <div className="whitespace-nowrap rounded-lg border border-ink/10 bg-white px-3 py-2 shadow-sm">
-      <p className="text-sm font-semibold text-ink">{name}</p>
-      {sub && <p className="text-[11px] tracking-wide text-ink/50 uppercase">{sub}</p>}
-    </div>
-  );
-}
-
-function PedigreeTree({
-  node,
-  sub,
-  hasIncoming,
-}: {
-  node: Ancestor;
-  sub?: string;
-  hasIncoming?: boolean;
-}) {
-  return (
-    <div className="relative flex items-center gap-6">
-      {hasIncoming && (
-        <span className="absolute top-1/2 -left-6 h-px w-6 -translate-y-1/2 bg-gold/30" />
-      )}
-      <PedigreeNode name={node.name} sub={sub} />
-      {node.children && (
-        <div className="relative flex flex-col justify-center gap-4 border-l-2 border-gold/30 pl-6">
-          <span className="absolute top-1/2 -left-6 h-px w-6 -translate-y-1/2 bg-gold/30" />
-          {node.children.map((child) => (
-            <PedigreeTree key={child.name} node={child} hasIncoming />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
 export function BreedingPhilosophy() {
   return (
     <section className="bg-cream">
@@ -115,16 +48,6 @@ export function BreedingPhilosophy() {
               on preserving the best qualities of the breed while enhancing
               temperament, health, and structure with every generation.
             </p>
-            <Link
-              href="/bloodlines"
-              className={cn(
-                buttonVariants({ variant: "outline" }),
-                "mt-6 rounded-full border-ink/25 bg-cream px-6"
-              )}
-            >
-              Learn More About Our Program
-              <ArrowRight className="size-4" />
-            </Link>
           </div>
 
           {/* ponytail: reference shows a sire photo card here — swapped for a text-only stat card per explicit "leave out the images" instruction */}
@@ -139,20 +62,11 @@ export function BreedingPhilosophy() {
           </div>
 
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <p className="text-sm font-semibold tracking-[0.25em] text-gold uppercase">
-                  Pedigree Example
-                </p>
-                <span className="h-px w-10 bg-gold/40" />
-              </div>
-              <Link
-                href="/bloodlines"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold tracking-wide text-gold uppercase hover:text-gold-light"
-              >
-                View Full Pedigrees
-                <ArrowRight className="size-3.5" />
-              </Link>
+            <div className="flex items-center gap-3">
+              <p className="text-sm font-semibold tracking-[0.25em] text-gold uppercase">
+                Pedigree Example
+              </p>
+              <span className="h-px w-10 bg-gold/40" />
             </div>
             <p className="mt-3 text-sm text-ink/60">
               A look into the lineage behind our exceptional puppies.

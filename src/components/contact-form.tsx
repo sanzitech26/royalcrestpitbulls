@@ -2,7 +2,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const inputClasses =
+export const inputClasses =
   "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-gold focus:outline-none";
 
 // tinted fields with no visible border until focused (the /contact panel look)

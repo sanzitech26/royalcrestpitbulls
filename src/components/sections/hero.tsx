@@ -25,20 +25,30 @@ const features = [
 export function Hero() {
   return (
     <section className="relative overflow-hidden bg-cream">
-      {/* TODO: swap in the real hero photo at public/images/hero-puppy.jpg */}
-      <div className="absolute inset-0">
+      {/* full-bleed background photo: desktop only, a tall/narrow mobile section would force an unusably tight crop */}
+      <div className="absolute inset-0 hidden lg:block">
         <Image
           src="/images/hero-puppy.jpg"
           alt="RoyalCrest Pitbulls puppy"
           fill
           priority
-          className="object-cover object-[75%_center]"
+          className="object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/85 to-transparent" />
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl gap-10 px-6 py-20 lg:grid-cols-2 lg:py-28">
+      <div className="relative mx-auto grid max-w-7xl gap-10 px-6 py-12 lg:grid-cols-2 lg:py-28">
         <div className="max-w-xl">
+          <div className="relative mb-8 aspect-[4/3] w-full overflow-hidden rounded-2xl lg:hidden">
+            <Image
+              src="/images/hero-puppy.jpg"
+              alt="RoyalCrest Pitbulls puppy"
+              fill
+              priority
+              className="object-cover"
+            />
+          </div>
+
           <p className="text-sm font-semibold tracking-[0.25em] text-gold uppercase">
             More Than A Dog. A Family.
           </p>

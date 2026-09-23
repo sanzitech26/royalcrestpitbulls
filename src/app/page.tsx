@@ -4,6 +4,7 @@ import { Hero } from "@/components/sections/hero";
 import { StatsBar } from "@/components/sections/stats-bar";
 import { AvailablePuppies } from "@/components/sections/available-puppies";
 import { RoyalCrestStandard } from "@/components/sections/royalcrest-standard";
+import { BreedingPhilosophy } from "@/components/sections/breeding-philosophy";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <StatsBar />
       <AvailablePuppies />
       <RoyalCrestStandard />
+      <BreedingPhilosophy />
     </div>
   );
 }

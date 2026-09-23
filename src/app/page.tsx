@@ -5,6 +5,7 @@ import { StatsBar } from "@/components/sections/stats-bar";
 import { AvailablePuppies } from "@/components/sections/available-puppies";
 import { RoyalCrestStandard } from "@/components/sections/royalcrest-standard";
 import { BreedingPhilosophy } from "@/components/sections/breeding-philosophy";
+import { ContactShipping } from "@/components/sections/contact-shipping";
 
 export default function Home() {
   return (
@@ -16,6 +17,7 @@ export default function Home() {
       <AvailablePuppies />
       <RoyalCrestStandard />
       <BreedingPhilosophy />
+      <ContactShipping />
     </div>
   );
 }

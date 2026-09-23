@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, PawPrint, ShieldCheck, Heart, Play } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { IconCircle } from "@/components/ui/icon-circle";
 import { cn } from "@/lib/utils";
 
 const features = [
@@ -32,7 +33,7 @@ export function Hero() {
           alt="RoyalCrest Pitbulls puppy"
           fill
           priority
-          className="object-cover object-center"
+          className="object-cover object-[25%_35%]"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-cream via-cream/85 to-transparent" />
       </div>
@@ -83,9 +84,7 @@ export function Hero() {
           <div className="mt-12 flex flex-wrap gap-8">
             {features.map(({ icon: Icon, title, subtitle }) => (
               <div key={title} className="flex items-center gap-3">
-                <span className="flex size-12 shrink-0 items-center justify-center rounded-full border border-gold/40 text-gold">
-                  <Icon className="size-5" />
-                </span>
+                <IconCircle icon={Icon} />
                 <div>
                   <p className="text-sm font-semibold text-ink">{title}</p>
                   <p className="text-xs text-ink/60">{subtitle}</p>

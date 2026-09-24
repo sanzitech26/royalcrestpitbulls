@@ -9,9 +9,7 @@ export type PuppyRow = {
   name: string;
   price: number;
   gender: "Male" | "Female";
-  date_of_birth: string;
   breed: string;
-  color: string;
   status: PuppyStatus;
   image: string;
 };
@@ -22,12 +20,7 @@ export type Puppy = {
   name: string;
   price: number;
   gender: "Male" | "Female";
-  ageWeeks: number;
   breed: string;
-  color: string;
   status: "Available" | "Reserved";
   image: string;
 };
-
-export const weeksOld = (dateOfBirth: string) =>
-  Math.max(0, Math.floor((Date.now() - new Date(dateOfBirth).getTime()) / (7 * 24 * 60 * 60 * 1000)));

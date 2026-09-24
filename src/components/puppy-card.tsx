@@ -11,7 +11,6 @@ export function PuppyCard({ puppy }: { puppy: Puppy }) {
   const facts: [string, string][] = [
     ["Condition", puppy.status],
     ["Sex", puppy.gender],
-    ["Age", `${puppy.ageWeeks} weeks old`],
     ["Breed", puppy.breed],
   ];
 

@@ -1,8 +1,9 @@
 -- RoyalCrest Pitbulls: complete Supabase setup (contract signatures + admin area + inquiries + optional sample content).
 --
--- Paste this WHOLE file into the Supabase SQL editor and click Run. It is safe to run more than once: it never drops
--- data, and everything it creates is skipped or replaced if it already exists. Do NOT also run the individual files in
--- supabase/migrations; this file already contains all of them (20260923 .. 20260925).
+-- Paste this WHOLE file into the Supabase SQL editor and click Run. It is safe to run more than once: it never deletes
+-- rows, and everything it creates is skipped or replaced if it already exists (the one thing it removes is the retired
+-- puppy date-of-birth and color columns, in STEP 3). Do NOT also run the individual files in supabase/migrations; this
+-- file already contains all of them (20260923 .. 20260926).
 --
 -- Order of events: run this file, create your login (Authentication > Users > Add user), turn off public sign-ups
 -- (Authentication > Sign In / Providers > "Allow new users to sign up" off), then make that user an admin (see
@@ -70,13 +71,17 @@ create table if not exists public.puppies (
   name text not null check (char_length(name) between 1 and 60),
   price integer not null check (price between 0 and 1000000),
   gender text not null check (gender in ('Male', 'Female')),
-  date_of_birth date not null,
   breed text not null default 'Pitbull' check (char_length(breed) between 1 and 60),
-  color text not null check (char_length(color) between 1 and 60),
   status text not null default 'available' check (status in ('available', 'reserved', 'sold')),
   -- a path under /public (sample data) or a full https URL (uploaded to the puppy-photos bucket)
   image text not null check (image ~ '^(/[^/]|https://)' and char_length(image) <= 500)
 );
+
+-- Puppies no longer have a date of birth or a color. Earlier versions of this script created those two columns; this
+-- removes them (and their values) if they are still there. On a fresh install it does nothing.
+alter table public.puppies
+  drop column if exists date_of_birth,
+  drop column if exists color;
 
 alter table public.puppies enable row level security;
 revoke all on table public.puppies from anon, authenticated;
@@ -192,20 +197,20 @@ create policy "admins delete puppy photos" on storage.objects
 -- fabricated reviews as real ones. To start with an empty site, delete this whole step before running.
 -- Each table is only filled if it is completely empty, so re-running never duplicates rows or brings back deleted ones.
 
--- Newest first on the site, so kobe gets the latest created_at. Birth dates are worked back from the old "weeks old".
-insert into public.puppies (id, name, price, gender, date_of_birth, color, status, image, created_at)
-select id, name, price, gender, current_date - weeks * 7, color, 'available', '/images/puppies/' || id || '.jpg',
+-- Newest first on the site, so kobe gets the latest created_at.
+insert into public.puppies (id, name, price, gender, status, image, created_at)
+select id, name, price, gender, 'available', '/images/puppies/' || id || '.jpg',
        now() - (pos - 1) * interval '1 minute'
 from (values
-  (1, 'kobe',  'Kobe',  900, 'Male',   12, 'Fawn'),
-  (2, 'luna',  'Luna',  850, 'Female', 10, 'Fawn'),
-  (3, 'zeus',  'Zeus',  950, 'Male',   14, 'Chocolate'),
-  (4, 'bella', 'Bella', 875, 'Female', 11, 'Black'),
-  (5, 'titan', 'Titan', 900, 'Male',   13, 'Blue & White'),
-  (6, 'rosie', 'Rosie', 825, 'Female',  9, 'Cream'),
-  (7, 'duke',  'Duke',  925, 'Male',   12, 'Chocolate'),
-  (8, 'mia',   'Mia',   800, 'Female', 10, 'Blue & White')
-) as p (pos, id, name, price, gender, weeks, color)
+  (1, 'kobe',  'Kobe',  900, 'Male'),
+  (2, 'luna',  'Luna',  850, 'Female'),
+  (3, 'zeus',  'Zeus',  950, 'Male'),
+  (4, 'bella', 'Bella', 875, 'Female'),
+  (5, 'titan', 'Titan', 900, 'Male'),
+  (6, 'rosie', 'Rosie', 825, 'Female'),
+  (7, 'duke',  'Duke',  925, 'Male'),
+  (8, 'mia',   'Mia',   800, 'Female')
+) as p (pos, id, name, price, gender)
 where not exists (select 1 from public.puppies)
 on conflict (id) do nothing;
 

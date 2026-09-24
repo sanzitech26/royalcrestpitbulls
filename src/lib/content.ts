@@ -1,6 +1,6 @@
 import { cache } from "react";
 import { faqCategories, type FaqCategory } from "@/data/faqs";
-import { weeksOld, type Puppy, type PuppyRow } from "@/data/puppies";
+import type { Puppy, PuppyRow } from "@/data/puppies";
 import type { Testimonial } from "@/data/testimonials";
 import { createAnonClient } from "@/lib/supabase/anon";
 
@@ -24,7 +24,7 @@ export const getPuppies = cache(async (): Promise<Puppy[]> => {
   const rows = await load<PuppyRow>("puppies", (db) =>
     db
       .from("puppies")
-      .select("id, name, price, gender, date_of_birth, breed, color, status, image")
+      .select("id, name, price, gender, breed, status, image")
       .order("created_at", { ascending: false })
   );
   return rows.map((row) => ({
@@ -32,9 +32,7 @@ export const getPuppies = cache(async (): Promise<Puppy[]> => {
     name: row.name,
     price: row.price,
     gender: row.gender,
-    ageWeeks: weeksOld(row.date_of_birth),
     breed: row.breed,
-    color: row.color,
     status: row.status === "reserved" ? "Reserved" : "Available",
     image: row.image,
   }));

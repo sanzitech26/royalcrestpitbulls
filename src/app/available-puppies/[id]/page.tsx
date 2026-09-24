@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
-  Calendar,
   FileText,
   Heart,
   Mars,
@@ -41,7 +40,7 @@ export async function generateMetadata(props: PageProps<"/available-puppies/[id]
   if (!puppy) return {};
   return {
     title: `${puppy.name} | RoyalCrest Pitbulls`,
-    description: `${puppy.name}, a ${puppy.color.toLowerCase()} ${puppy.gender.toLowerCase()} ${puppy.breed} puppy, ${puppy.ageWeeks} weeks old.`,
+    description: `${puppy.name}, a ${puppy.gender.toLowerCase()} ${puppy.breed} puppy.`,
   };
 }
 
@@ -53,13 +52,7 @@ export default async function PuppyPage(props: PageProps<"/available-puppies/[id
   const GenderIcon = puppy.gender === "Male" ? Mars : Venus;
   const specs = [
     { icon: <GenderIcon className="size-4 text-ink/40" />, label: "Gender", value: puppy.gender },
-    { icon: <Calendar className="size-4 text-ink/40" />, label: "Age", value: `${puppy.ageWeeks} weeks old` },
     { icon: <PawPrint className="size-4 text-ink/40" />, label: "Breed", value: puppy.breed },
-    {
-      icon: <span className="size-2.5 rounded-full border border-ink/20 bg-gold/60" />,
-      label: "Color",
-      value: puppy.color,
-    },
   ];
   const more = (await getPuppies()).filter((p) => p.id !== puppy.id).slice(0, 4);
 
@@ -67,7 +60,7 @@ export default async function PuppyPage(props: PageProps<"/available-puppies/[id
     <>
       <PageHero
         title={puppy.name}
-        description={`${puppy.color} ${puppy.gender.toLowerCase()} ${puppy.breed} puppy, ${puppy.ageWeeks} weeks old.`}
+        description={`${puppy.gender} ${puppy.breed} puppy looking for a loving home.`}
         crumbs={[{ label: "Available Puppies", href: "/available-puppies" }, { label: puppy.name }]}
       />
 

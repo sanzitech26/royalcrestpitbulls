@@ -5,7 +5,7 @@ import { AdminForm } from "@/components/admin/admin-form";
 import { cardClasses, Pill } from "@/components/admin/fields";
 import { PageHeader } from "@/components/admin/page-header";
 import { buttonVariants } from "@/components/ui/button";
-import { weeksOld, type PuppyRow, type PuppyStatus } from "@/data/puppies";
+import type { PuppyRow, PuppyStatus } from "@/data/puppies";
 import { requireAdmin } from "@/lib/admin/auth";
 import { cn } from "@/lib/utils";
 import { setPuppyStatus } from "./actions";
@@ -53,8 +53,7 @@ export default async function PuppiesPage() {
                   {puppy.name}
                 </Link>
                 <p className="truncate text-xs text-ink/60">
-                  {puppy.gender} &middot; {weeksOld(puppy.date_of_birth)} weeks &middot; {puppy.color} &middot; $
-                  {puppy.price}
+                  {puppy.gender} &middot; {puppy.breed} &middot; ${puppy.price}
                 </p>
               </div>
               <div className="ml-auto lg:ml-4">

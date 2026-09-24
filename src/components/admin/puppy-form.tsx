@@ -33,21 +33,8 @@ export function PuppyForm({ puppy }: { puppy?: PuppyRow }) {
             <option value="Female">Female</option>
           </select>
         </Field>
-        <Field label="Date of birth" hint="The website shows the age in weeks and keeps it up to date by itself.">
-          <input
-            name="date_of_birth"
-            type="date"
-            required
-            max={new Date().toISOString().slice(0, 10)}
-            defaultValue={puppy?.date_of_birth}
-            className={fieldClasses}
-          />
-        </Field>
         <Field label="Breed">
           <input name="breed" required maxLength={60} defaultValue={puppy?.breed ?? "Pitbull"} className={fieldClasses} />
-        </Field>
-        <Field label="Color">
-          <input name="color" required maxLength={60} defaultValue={puppy?.color} placeholder="e.g. Blue & White" className={fieldClasses} />
         </Field>
       </div>
 

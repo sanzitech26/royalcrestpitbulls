@@ -5,7 +5,11 @@ import { PageHero } from "@/components/layout/page-hero";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { lastUpdated, sections } from "@/data/refund-policy";
+import { getPuppies } from "@/lib/content";
 import { cn } from "@/lib/utils";
+
+// The puppy dropdown comes from Supabase; admin edits also revalidate this page immediately.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Return & Refund Policy | RoyalCrest Pitbulls",
@@ -32,7 +36,9 @@ const contents = (
   </ol>
 );
 
-export default function ContractPage() {
+export default async function ContractPage() {
+  const puppies = (await getPuppies()).map(({ id, name }) => ({ id, name }));
+
   return (
     <>
       <PageHero
@@ -105,7 +111,7 @@ export default function ContractPage() {
 
             {/* right: the sign form. Above the policy on small screens; sticky beside it on desktop, scrolling inside itself if the screen is short */}
             <div className="order-first lg:sticky lg:top-24 lg:order-last lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
-              <ContractForm />
+              <ContractForm puppies={puppies} />
             </div>
           </div>
         </div>

@@ -1,7 +1,13 @@
-import { ArrowRight, ChevronDown } from "lucide-react";
+"use client";
+
+import { startTransition, useActionState } from "react";
+import { ArrowRight, CheckCircle2, ChevronDown } from "lucide-react";
+import { sendInquiry, type InquiryState } from "@/app/contact/actions";
 import { buttonVariants } from "@/components/ui/button";
+import { inquirySubjects } from "@/data/inquiries";
 import { cn } from "@/lib/utils";
 
+// Imported as a string by contract-form.tsx (another client component); don't import it from a server component.
 export const inputClasses =
   "w-full rounded-lg border border-ink/15 bg-white px-4 py-3 text-sm text-ink placeholder:text-ink/40 focus:border-gold focus:outline-none";
 
@@ -9,18 +15,67 @@ export const inputClasses =
 const filledClasses =
   "w-full rounded-lg border border-transparent bg-ink/[0.06] px-4 py-3 text-sm text-ink placeholder:text-ink/50 focus:border-gold focus:bg-white focus:outline-none";
 
-// ponytail: no backend wired yet (Supabase unused so far) — static form, submit button is inert until that lands
 export function ContactForm({ className, filled }: { className?: string; filled?: boolean }) {
+  const [state, action, pending] = useActionState<InquiryState, FormData>(sendInquiry, { ok: false });
   const field = filled ? filledClasses : inputClasses;
 
+  if (state.ok) {
+    return (
+      <div className={cn("rounded-2xl border border-gold/30 p-8 text-center", className)}>
+        <CheckCircle2 className="mx-auto size-12 text-gold" />
+        <h3 className="mt-4 font-display text-2xl font-bold text-ink">
+          Thank you{state.name ? `, ${state.name.split(" ")[0]}` : ""}.
+        </h3>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-ink/70">
+          We&rsquo;ve received your message and will get back to you as soon as possible.
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <form className={cn("space-y-4", className)}>
+    <form
+      // submitted from onSubmit, not the `action` prop: React resets the form after an action runs, which would wipe
+      // what the visitor typed whenever the server says no (browser validation has already passed by the time this runs)
+      onSubmit={(e) => {
+        e.preventDefault();
+        const data = new FormData(e.currentTarget);
+        startTransition(() => action(data));
+      }}
+      className={cn("space-y-4", className)}
+    >
+      {/* honeypot: hidden from people, bots fill it */}
+      <div aria-hidden className="absolute -left-[9999px]">
+        <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <input type="text" placeholder="Full Name *" aria-label="Full name" className={field} />
-        <input type="email" placeholder="Email Address *" aria-label="Email address" className={field} />
+        <input
+          name="name"
+          type="text"
+          required
+          minLength={2}
+          maxLength={100}
+          autoComplete="name"
+          placeholder="Full Name *"
+          aria-label="Full name"
+          className={field}
+        />
+        <input
+          name="email"
+          type="email"
+          required
+          maxLength={200}
+          autoComplete="email"
+          placeholder="Email Address *"
+          aria-label="Email address"
+          className={field}
+        />
       </div>
       <div className="relative">
         <select
+          name="subject"
+          required
           defaultValue=""
           aria-label="Subject"
           className={cn(field, "appearance-none text-ink/70")}
@@ -28,10 +83,11 @@ export function ContactForm({ className, filled }: { className?: string; filled?
           <option value="" disabled>
             Subject *
           </option>
-          <option value="puppies">Available Puppies</option>
-          <option value="breeding">Breeding Program</option>
-          <option value="shipping">Shipping &amp; Delivery</option>
-          <option value="other">Other</option>
+          {inquirySubjects.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
         <ChevronDown
           className={cn(
@@ -41,17 +97,29 @@ export function ContactForm({ className, filled }: { className?: string; filled?
         />
       </div>
       <textarea
+        name="message"
+        required
+        minLength={5}
+        maxLength={2000}
         placeholder="Your Message *"
         aria-label="Your message"
         rows={4}
         className={cn(field, "resize-none")}
       />
+
+      {state.error && (
+        <p role="alert" className="text-sm font-medium text-red-700">
+          {state.error}
+        </p>
+      )}
+
       <button
-        type="button"
+        type="submit"
+        disabled={pending}
         className={cn(buttonVariants({ size: "lg" }), "w-full rounded-full", filled && "h-11")}
       >
-        Send Message
-        <ArrowRight className="size-4" />
+        {pending ? "Sending…" : "Send Message"}
+        {!pending && <ArrowRight className="size-4" />}
       </button>
     </form>
   );

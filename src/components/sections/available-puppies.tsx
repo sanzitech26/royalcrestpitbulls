@@ -2,8 +2,9 @@ import Link from "next/link";
 import { ArrowRight, PawPrint, ShieldCheck, Heart } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { IconCircle } from "@/components/ui/icon-circle";
+import { NoPuppies } from "@/components/no-puppies";
 import { PuppyCard } from "@/components/puppy-card";
-import { puppies } from "@/data/puppies";
+import { getPuppies } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 export const trustBadges = [
@@ -12,7 +13,9 @@ export const trustBadges = [
   { icon: Heart, label: "Family Raised" },
 ];
 
-export function AvailablePuppies() {
+export async function AvailablePuppies() {
+  const puppies = (await getPuppies()).slice(0, 8);
+
   return (
     <section className="mx-auto max-w-7xl px-6 py-20">
       <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
@@ -50,11 +53,17 @@ export function AvailablePuppies() {
         </div>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {puppies.map((puppy) => (
-          <PuppyCard key={puppy.id} puppy={puppy} />
-        ))}
-      </div>
+      {puppies.length ? (
+        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {puppies.map((puppy) => (
+            <PuppyCard key={puppy.id} puppy={puppy} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-12">
+          <NoPuppies />
+        </div>
+      )}
 
       <div className="mt-14 flex items-center justify-center gap-4">
         <span className="h-px w-12 bg-gold/40" />

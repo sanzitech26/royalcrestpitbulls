@@ -5,7 +5,6 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { signContract, type SignState } from "@/app/contract/actions";
 import { inputClasses } from "@/components/contact-form";
 import { buttonVariants } from "@/components/ui/button";
-import { puppies } from "@/data/puppies";
 import { undecidedPuppy } from "@/data/refund-policy";
 import { cn } from "@/lib/utils";
 
@@ -125,7 +124,7 @@ function SignaturePad({
   );
 }
 
-export function ContractForm() {
+export function ContractForm({ puppies }: { puppies: { id: string; name: string }[] }) {
   const [state, action, pending] = useActionState<SignState, FormData>(signContract, { ok: false });
   const [accepted, setAccepted] = useState(false);
   const [signature, setSignature] = useState("");

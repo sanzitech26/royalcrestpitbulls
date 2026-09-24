@@ -1,8 +1,8 @@
-import { Clock, Mail, Phone } from "lucide-react";
+import { Clock, Mail } from "lucide-react";
 
 // PLACEHOLDER contact details — replace with the real ones before launch. Every page reads them from here.
+// (No phone number on the site by request; visitors reach the breeder by email and the contact forms.)
 export const site = {
-  phone: "+1 (555) 123-4567",
   email: "info@royalcrestpitbulls.com",
   supportEmail: "support@royalcrestpitbulls.com",
   hours: "Mon - Sat: 9AM - 7PM",
@@ -10,7 +10,6 @@ export const site = {
 };
 
 export const contactInfo = [
-  { icon: Phone, label: "Call Us", value: site.phone },
   { icon: Mail, label: "Email Us", value: site.email },
   { icon: Clock, label: "Our Hours", value: site.hours, extra: site.sundayNote },
 ];

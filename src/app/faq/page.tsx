@@ -9,7 +9,6 @@ import {
   Mail,
   MapPin,
   Minus,
-  Phone,
   Plus,
   ShieldCheck,
   Users,
@@ -17,9 +16,12 @@ import {
 import { buttonVariants } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { IconCircle } from "@/components/ui/icon-circle";
-import { faqs } from "@/data/faqs";
 import { site } from "@/data/site";
+import { getFaqs } from "@/lib/content";
 import { cn } from "@/lib/utils";
+
+// The questions come from Supabase; admin edits also revalidate this page immediately.
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "FAQ | RoyalCrest Pitbulls",
@@ -28,13 +30,6 @@ export const metadata: Metadata = {
 };
 
 const contact = [
-  {
-    icon: Phone,
-    label: "Call Us",
-    value: site.phone,
-    href: `tel:${site.phone.replace(/[^\d+]/g, "")}`,
-    note: site.hours,
-  },
   {
     icon: Mail,
     label: "Email Us",
@@ -57,7 +52,8 @@ const promises = [
 ];
 
 // ponytail: the reference shows the owner's own photos (forest puppy portrait, mother + litter) — stock stand-ins until those exist
-export default function FaqPage() {
+export default async function FaqPage() {
+  const faqs = await getFaqs();
   let n = 0;
 
   return (

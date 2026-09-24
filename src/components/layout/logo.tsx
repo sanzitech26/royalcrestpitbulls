@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function Logo({ onDark, className }: { onDark?: boolean; className?: string }) {
+export function Logo({ onDark, className, href = "/" }: { onDark?: boolean; className?: string; href?: string }) {
   return (
-    <Link href="/" className={cn("flex items-center gap-2", className)}>
+    <Link href={href} className={cn("flex items-center gap-2", className)}>
       <Crown className={cn("size-7", onDark ? "text-gold-light" : "text-gold")} />
       <span className="flex flex-col leading-tight">
         <span

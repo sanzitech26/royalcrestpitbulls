@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 };
 
 const hrefs: Record<string, string> = {
-  "Call Us": `tel:${site.phone.replace(/[^\d+]/g, "")}`,
   "Email Us": `mailto:${site.email}`,
 };
 
@@ -75,7 +74,7 @@ export default function ContactPage() {
               </div>
             </div>
 
-            <div className="grid divide-y divide-ink/10 border-t border-ink/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            <div className="grid divide-y divide-ink/10 border-t border-ink/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0">
               {contactInfo.map(({ icon, label, value, extra }) => {
                 const href = hrefs[label];
                 return (

@@ -18,7 +18,7 @@ import { PuppyCard } from "@/components/puppy-card";
 import { buttonVariants } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { IconCircle } from "@/components/ui/icon-circle";
-import { puppies } from "@/data/puppies";
+import { getPuppies, getPuppy } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 const included = [
@@ -28,13 +28,16 @@ const included = [
   { icon: PawPrint, text: "Lifetime support from your breeder" },
 ];
 
-export function generateStaticParams() {
-  return puppies.map((p) => ({ id: p.id }));
+// Puppies come from Supabase; admin edits also revalidate this page immediately. Puppies added later render on demand.
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  return (await getPuppies()).map((p) => ({ id: p.id }));
 }
 
 export async function generateMetadata(props: PageProps<"/available-puppies/[id]">): Promise<Metadata> {
   const { id } = await props.params;
-  const puppy = puppies.find((p) => p.id === id);
+  const puppy = await getPuppy(id);
   if (!puppy) return {};
   return {
     title: `${puppy.name} | RoyalCrest Pitbulls`,
@@ -44,7 +47,7 @@ export async function generateMetadata(props: PageProps<"/available-puppies/[id]
 
 export default async function PuppyPage(props: PageProps<"/available-puppies/[id]">) {
   const { id } = await props.params;
-  const puppy = puppies.find((p) => p.id === id);
+  const puppy = await getPuppy(id);
   if (!puppy) notFound();
 
   const GenderIcon = puppy.gender === "Male" ? Mars : Venus;
@@ -58,7 +61,7 @@ export default async function PuppyPage(props: PageProps<"/available-puppies/[id
       value: puppy.color,
     },
   ];
-  const more = puppies.filter((p) => p.id !== puppy.id).slice(0, 4);
+  const more = (await getPuppies()).filter((p) => p.id !== puppy.id).slice(0, 4);
 
   return (
     <>
@@ -80,7 +83,9 @@ export default async function PuppyPage(props: PageProps<"/available-puppies/[id
               className="object-cover"
             />
             <span className="absolute bottom-4 left-4 flex items-center gap-1.5 rounded-full bg-white px-3 py-1 text-xs font-semibold text-ink shadow-sm">
-              <span className="size-1.5 rounded-full bg-green-600" />
+              <span
+                className={cn("size-1.5 rounded-full", puppy.status === "Reserved" ? "bg-amber-500" : "bg-green-600")}
+              />
               {puppy.status.toUpperCase()}
             </span>
           </div>
@@ -120,7 +125,7 @@ export default async function PuppyPage(props: PageProps<"/available-puppies/[id
             </ul>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link href="/contact" className={cn(buttonVariants({ size: "lg" }), "rounded-full px-6")}>
+              <Link href={`/contact/${puppy.id}`} className={cn(buttonVariants({ size: "lg" }), "rounded-full px-6")}>
                 Contact Us About {puppy.name}
                 <ArrowRight className="size-4" />
               </Link>

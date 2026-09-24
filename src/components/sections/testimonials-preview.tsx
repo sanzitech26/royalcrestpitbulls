@@ -3,10 +3,13 @@ import { ArrowRight } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { TestimonialCard } from "@/components/testimonial-card";
-import { testimonials } from "@/data/testimonials";
+import { getTestimonials } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
-export function TestimonialsPreview() {
+export async function TestimonialsPreview() {
+  const testimonials = await getTestimonials();
+  if (!testimonials.length) return null;
+
   return (
     <section className="bg-charcoal">
       <div className="mx-auto max-w-7xl px-6 py-20">

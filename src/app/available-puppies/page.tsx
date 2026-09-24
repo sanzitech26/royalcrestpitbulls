@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
+import { NoPuppies } from "@/components/no-puppies";
 import { PuppyCard } from "@/components/puppy-card";
 import { CtaBand } from "@/components/sections/cta-band";
 import { trustBadges } from "@/components/sections/available-puppies";
 import { IconCircle } from "@/components/ui/icon-circle";
-import { puppies } from "@/data/puppies";
+import { getPuppies } from "@/lib/content";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -20,7 +21,7 @@ const filters = [
 ];
 
 export default async function AvailablePuppiesPage(props: PageProps<"/available-puppies">) {
-  const { gender } = await props.searchParams;
+  const [{ gender }, puppies] = await Promise.all([props.searchParams, getPuppies()]);
   const selected = gender === "male" || gender === "female" ? gender : undefined;
   const visible = selected ? puppies.filter((p) => p.gender.toLowerCase() === selected) : puppies;
 
@@ -69,14 +70,22 @@ export default async function AvailablePuppiesPage(props: PageProps<"/available-
           </div>
         </div>
 
-        <p className="mt-8 text-sm text-ink/60">
-          Showing {visible.length} of {puppies.length} puppies
-        </p>
-        <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {visible.map((puppy) => (
-            <PuppyCard key={puppy.id} puppy={puppy} />
-          ))}
-        </div>
+        {puppies.length ? (
+          <>
+            <p className="mt-8 text-sm text-ink/60">
+              Showing {visible.length} of {puppies.length} puppies
+            </p>
+            <div className="mt-4 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {visible.map((puppy) => (
+                <PuppyCard key={puppy.id} puppy={puppy} />
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="mt-8">
+            <NoPuppies />
+          </div>
+        )}
       </section>
 
       <CtaBand

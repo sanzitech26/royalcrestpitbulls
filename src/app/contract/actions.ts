@@ -1,8 +1,8 @@
 "use server";
 
 import { createClient } from "@supabase/supabase-js";
-import { puppies } from "@/data/puppies";
 import { policyVersion, undecidedPuppy } from "@/data/refund-policy";
+import { getPuppies } from "@/lib/content";
 
 export type SignState = { ok: boolean; error?: string; name?: string };
 
@@ -24,6 +24,7 @@ export async function signContract(_prev: SignState, formData: FormData): Promis
     signature: text(formData, "signature"),
   };
   const { signature } = row;
+  const puppies = await getPuppies();
 
   const problems: [boolean, string][] = [
     [row.puppy !== undecidedPuppy && !puppies.some((p) => p.name === row.puppy), "Please choose a puppy."],

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUp, Clock, Mail, Phone } from "lucide-react";
+import { ArrowRight, ArrowUp, Clock, Mail } from "lucide-react";
 import { Logo } from "@/components/layout/logo";
 import { socials } from "@/components/layout/social-icons";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ const columns = [
 ];
 
 const contact = [
-  { icon: Phone, text: site.phone, href: `tel:${site.phone.replace(/[^\d+]/g, "")}` },
   { icon: Mail, text: site.email, href: `mailto:${site.email}` },
   { icon: Clock, text: site.hours, extra: site.sundayNote },
 ];

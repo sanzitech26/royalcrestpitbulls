@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { cardClasses } from "@/components/admin/fields";
 import { PageHeader } from "@/components/admin/page-header";
 import { PrintButton } from "@/components/admin/print-button";
+import { optionLabel, paymentMethods, shippingOptions } from "@/data/puppy-contract";
 import { requireAdmin } from "@/lib/admin/auth";
 import { formatDate } from "@/lib/admin/format";
 
@@ -22,8 +23,12 @@ export default async function SignaturePage(props: PageProps<"/admin/signatures/
     ["Email", row.email],
     ["Phone", row.phone],
     ["Delivery address", row.delivery_address],
-    ["Policy version", row.policy_version],
-    ["Agreed to the policy", row.accepted ? "Yes" : "No"],
+    // empty on signatures made before the Puppy Contract added these fields
+    ["Agreed price", row.agreed_price == null ? "—" : `$${row.agreed_price.toLocaleString("en-US")}`],
+    ["Shipping option", row.shipping_option ? optionLabel(shippingOptions, row.shipping_option) : "—"],
+    ["Payment method", row.payment_method ? optionLabel(paymentMethods, row.payment_method) : "—"],
+    ["Terms version", row.policy_version],
+    ["Agreed to the terms", row.accepted ? "Yes" : "No"],
   ];
 
   return (
@@ -37,10 +42,10 @@ export default async function SignaturePage(props: PageProps<"/admin/signatures/
       </Link>
 
       <div className="print:hidden">
-        <PageHeader title={row.full_name} description={`Signed the Return & Refund Policy for ${row.puppy}.`} action={<PrintButton />} />
+        <PageHeader title={row.full_name} description={`Signed the Puppy Contract for ${row.puppy}.`} action={<PrintButton />} />
       </div>
       <h1 className="hidden font-display text-2xl font-bold print:block">
-        RoyalCrest Pitbulls &mdash; Signed Return &amp; Refund Policy
+        RoyalCrest Pitbulls &mdash; Signed Puppy Contract
       </h1>
 
       <div className={`${cardClasses} max-w-3xl print:p-0 print:shadow-none`}>

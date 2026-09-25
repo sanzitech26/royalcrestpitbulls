@@ -17,7 +17,7 @@ export default async function SignaturesPage() {
     <div className="space-y-8">
       <PageHeader
         title="Contract signatures"
-        description="Everyone who has signed the Return & Refund Policy on the website. These are records, so they can be viewed and printed but not edited or deleted."
+        description="Everyone who has signed the Puppy Contract on the website (older entries signed the Return & Refund Policy). These are records, so they can be viewed and printed but not edited or deleted."
       />
 
       {error && (
@@ -34,7 +34,7 @@ export default async function SignaturesPage() {
               <th className="px-5 py-3 font-semibold">Name</th>
               <th className="px-5 py-3 font-semibold">Puppy</th>
               <th className="px-5 py-3 font-semibold">Contact</th>
-              <th className="px-5 py-3 font-semibold">Policy</th>
+              <th className="px-5 py-3 font-semibold">Terms</th>
               <th className="px-5 py-3" />
             </tr>
           </thead>

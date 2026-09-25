@@ -5,12 +5,7 @@
 export type PolicyBlock = string | string[];
 export type PolicySection = { title: string; body: PolicyBlock[] };
 
-// Saved with every signature so we know which text was agreed to. Bump both when the wording changes.
-export const policyVersion = "2026-09";
 export const lastUpdated = "September 2026";
-
-// "Puppy of interest" choice for someone who hasn't picked one (shared by the form and its server action)
-export const undecidedPuppy = "Not sure yet";
 
 export const sections: PolicySection[] = [
   {

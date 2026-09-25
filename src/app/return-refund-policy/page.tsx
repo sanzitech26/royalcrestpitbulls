@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
 import { Check } from "lucide-react";
-import { ContractForm } from "@/components/contract-form";
 import { PageHero } from "@/components/layout/page-hero";
 import { CtaBand } from "@/components/sections/cta-band";
 import { Eyebrow } from "@/components/ui/eyebrow";
 import { lastUpdated, sections } from "@/data/refund-policy";
-import { getPuppies } from "@/lib/content";
 import { cn } from "@/lib/utils";
-
-// The puppy dropdown comes from Supabase; admin edits also revalidate this page immediately.
-export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Return & Refund Policy | RoyalCrest Pitbulls",
@@ -19,9 +14,9 @@ export const metadata: Metadata = {
 
 const number = (i: number) => String(i + 1).padStart(2, "0");
 
-// one list, rendered twice: an always-open card on desktop, a collapsed "Jump to a section" below that
+// one list, rendered twice: an always-open card beside the policy on desktop, a collapsed "Jump to a section" below that
 const contents = (
-  <ol className="grid gap-x-4 sm:grid-cols-2">
+  <ol className="grid gap-x-4">
     {sections.map(({ title }, i) => (
       <li key={title}>
         <a
@@ -36,15 +31,13 @@ const contents = (
   </ol>
 );
 
-export default async function ContractPage() {
-  const puppies = (await getPuppies()).map(({ id, name }) => ({ id, name }));
-
+export default function RefundPolicyPage() {
   return (
     <>
       <PageHero
         title="Return & Refund Policy"
         description="Please review our policies regarding puppy reservations, deposits, payments, cancellations, transportation, and refunds before completing a purchase."
-        crumbs={[{ label: "Contract" }]}
+        crumbs={[{ label: "Return & Refund Policy" }]}
         image="/images/puppies/mia.jpg"
         imageAlt="A RoyalCrest Pitbulls puppy"
         imagePosition="object-[50%_45%]"
@@ -52,9 +45,8 @@ export default async function ContractPage() {
 
       <section className="bg-cream">
         <div className="mx-auto max-w-7xl px-6 py-16 lg:py-20">
-          <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_440px] lg:gap-14">
-            {/* left: the policy */}
-            <div id="policy" className="min-w-0 scroll-mt-28">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-14">
+            <div className="min-w-0">
               <Eyebrow>Return &amp; Refund Policy</Eyebrow>
               <h2 className="mt-3 font-display text-4xl font-bold text-ink sm:text-5xl">
                 Clear Policies.{" "}
@@ -62,16 +54,12 @@ export default async function ContractPage() {
               </h2>
               <p className="mt-3 text-sm text-ink/60">Last updated: {lastUpdated}</p>
 
-              <nav aria-label="Policy sections" className="mt-8">
-                <details className="rounded-2xl bg-white p-4 shadow-sm lg:hidden">
-                  <summary className="cursor-pointer font-semibold text-ink">Jump to a section</summary>
-                  <div className="mt-3">{contents}</div>
-                </details>
-                <div className="hidden rounded-2xl bg-white p-5 shadow-sm lg:block">
-                  <p className="mb-2 px-3 text-xs font-bold tracking-[0.2em] text-gold uppercase">In this policy</p>
+              <details className="mt-8 rounded-2xl bg-white p-4 shadow-sm lg:hidden">
+                <summary className="cursor-pointer font-semibold text-ink">Jump to a section</summary>
+                <nav aria-label="Policy sections" className="mt-3">
                   {contents}
-                </div>
-              </nav>
+                </nav>
+              </details>
 
               <div className="mt-10 divide-y divide-ink/10">
                 {sections.map(({ title, body }, i) => (
@@ -109,21 +97,27 @@ export default async function ContractPage() {
               </div>
             </div>
 
-            {/* right: the sign form. Above the policy on small screens; sticky beside it on desktop, scrolling inside itself if the screen is short */}
-            <div className="order-first lg:sticky lg:top-24 lg:order-last lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto">
-              <ContractForm puppies={puppies} />
-            </div>
+            {/* desktop: the contents stay in view beside the long policy, scrolling inside themselves if the screen is short */}
+            <nav
+              aria-label="Policy sections"
+              className="hidden lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-7rem)] lg:self-start lg:overflow-y-auto"
+            >
+              <div className="rounded-2xl bg-white p-5 shadow-sm">
+                <p className="mb-2 px-3 text-xs font-bold tracking-[0.2em] text-gold uppercase">In this policy</p>
+                {contents}
+              </div>
+            </nav>
           </div>
         </div>
       </section>
 
       <CtaBand
-        eyebrow="Questions About the Policy?"
-        title="Ask Us"
-        highlight="Anything."
-        description="We'll happily walk you through every term before you reserve a puppy."
-        primary={{ label: "Contact Us", href: "/contact" }}
-        secondary={{ label: "Read the FAQ", href: "/faq" }}
+        eyebrow="Ready to Reserve?"
+        title="Sign the"
+        highlight="Puppy Contract."
+        description="Read the terms, choose your puppy and sign online. Questions first? We'll happily walk you through every term."
+        primary={{ label: "Sign the Puppy Contract", href: "/puppy-contract" }}
+        secondary={{ label: "Contact Us", href: "/contact" }}
       />
     </>
   );

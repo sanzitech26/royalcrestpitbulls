@@ -2,23 +2,49 @@
 
 import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { signContract, type SignState } from "@/app/contract/actions";
+import { signContract, type SignState } from "@/app/puppy-contract/actions";
 import { inputClasses } from "@/components/contact-form";
 import { buttonVariants } from "@/components/ui/button";
-import { undecidedPuppy } from "@/data/refund-policy";
+import { paymentMethods, shippingOptions, terms, undecidedPuppy } from "@/data/puppy-contract";
 import { cn } from "@/lib/utils";
 
-// tighter than the /contact fields: this form sits in a sticky column and has to fit a laptop screen
-const fieldClasses = cn(inputClasses, "py-2.5");
+const labelClasses = "mb-1.5 block text-sm font-semibold text-ink";
+const star = <span className="text-gold">*</span>;
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({ label, optional, children }: { label: string; optional?: boolean; children: React.ReactNode }) {
   return (
     <label className="block">
-      <span className="mb-1 block text-sm font-semibold text-ink">
-        {label} <span className="text-gold">*</span>
+      <span className={labelClasses}>
+        {label} {optional ? <span className="font-normal text-ink/50">(optional)</span> : star}
       </span>
       {children}
     </label>
+  );
+}
+
+function Radios({
+  legend,
+  name,
+  options,
+}: {
+  legend: string;
+  name: string;
+  options: readonly { value: string; label: string }[];
+}) {
+  return (
+    <fieldset className="min-w-0">
+      <legend className={labelClasses}>
+        {legend} {star}
+      </legend>
+      <div className="space-y-2.5">
+        {options.map(({ value, label }) => (
+          <label key={value} className="flex items-center gap-2.5 text-sm text-ink/80">
+            <input type="radio" name={name} value={value} required className="size-4 shrink-0 accent-gold" />
+            {label}
+          </label>
+        ))}
+      </div>
+    </fieldset>
   );
 }
 
@@ -34,12 +60,10 @@ function SignaturePad({
   signed,
   onChange,
   invalid,
-  disabled,
 }: {
   signed: boolean;
   onChange: (png: string) => void;
   invalid: boolean;
-  disabled: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const drawing = useRef(false);
@@ -89,7 +113,7 @@ function SignaturePad({
     <div>
       <div className="mb-1.5 flex items-center justify-between">
         <span id="signature-label" className="text-sm font-semibold text-ink">
-          Your signature <span className="text-gold">*</span>
+          Your signature {star}
         </span>
         {signed && (
           <button
@@ -105,17 +129,15 @@ function SignaturePad({
           </button>
         )}
       </div>
-      {/* a canvas isn't a form control, so the parent <fieldset disabled> can't lock it: it gets the flag explicitly */}
       <canvas
         ref={canvas}
         aria-labelledby="signature-label"
-        aria-disabled={disabled}
-        onPointerDown={disabled ? undefined : start}
+        onPointerDown={start}
         onPointerMove={move}
         onPointerUp={end}
         onPointerCancel={end}
         className={cn(
-          "h-28 w-full touch-none rounded-lg border border-dashed bg-white",
+          "h-32 w-full touch-none rounded-lg border border-dashed bg-white",
           invalid ? "border-red-600" : "border-ink/25"
         )}
       />
@@ -126,10 +148,14 @@ function SignaturePad({
 
 export function ContractForm({ puppies }: { puppies: { id: string; name: string }[] }) {
   const [state, action, pending] = useActionState<SignState, FormData>(signContract, { ok: false });
-  const [accepted, setAccepted] = useState(false);
   const [signature, setSignature] = useState("");
-  const [missingSignature, setMissingSignature] = useState(false);
-  const formError = missingSignature && !signature ? "Please sign in the box." : state.error;
+  const [problem, setProblem] = useState<"" | "terms" | "signature">("");
+  const formError =
+    problem === "terms"
+      ? "Please choose Yes to accept the terms and conditions."
+      : problem === "signature" && !signature
+        ? "Please sign in the box."
+        : state.error;
 
   if (state.ok) {
     return (
@@ -139,8 +165,8 @@ export function ContractForm({ puppies }: { puppies: { id: string; name: string 
           Thank you{state.name ? `, ${state.name.split(" ")[0]}` : ""}.
         </h2>
         <p className="mx-auto mt-3 max-w-md text-ink/70">
-          Your signature has been recorded and we&rsquo;ll be in touch about your puppy. If you have any questions,
-          please contact us.
+          Your signed contract has been sent to our team and we&rsquo;ll be in touch about your puppy. If you have any
+          questions, please contact us.
         </p>
       </div>
     );
@@ -152,90 +178,47 @@ export function ContractForm({ puppies }: { puppies: { id: string; name: string 
       // what the visitor typed whenever the server says no (browser validation has already passed by the time this runs)
       onSubmit={(e) => {
         e.preventDefault();
-        if (!accepted) return; // the fieldset and button are locked until accepted; this covers anything that slips past
-        if (!signature) return setMissingSignature(true);
         const data = new FormData(e.currentTarget);
+        if (data.get("accepted") !== "yes") return setProblem("terms");
+        if (!signature) return setProblem("signature");
         startTransition(() => action(data));
       }}
-      className="space-y-3 rounded-2xl bg-white p-5 shadow-sm sm:p-6"
+      className="space-y-5 rounded-2xl bg-white p-6 shadow-sm sm:p-8"
     >
-      <h2 className="font-display text-3xl font-bold text-ink">Sign this contract</h2>
-
-      {/* step 1: nothing else on the form works until this is ticked */}
-      <div className="rounded-lg bg-cream p-3">
-        <label className="flex items-start gap-3 text-sm text-ink/80">
-          <input
-            name="accepted"
-            type="checkbox"
-            required
-            checked={accepted}
-            onChange={(e) => setAccepted(e.target.checked)}
-            className="mt-0.5 size-4 shrink-0 accent-gold"
-          />
-          <span>
-            I have read and agree to the{" "}
-            <a href="#policy" className="font-semibold text-gold underline underline-offset-2">
-              Return &amp; Refund Policy
-            </a>
-            .
-          </span>
-        </label>
-        {!accepted && (
-          <p id="gate-hint" className="mt-1.5 pl-7 text-xs font-medium text-ink/60">
-            Read the full policy, then tick this box to unlock the form.
-          </p>
-        )}
-      </div>
-
-      {/* honeypot: hidden from people, bots fill it. Outside the fieldset so it is always submitted */}
+      {/* honeypot: hidden from people, bots fill it */}
       <div aria-hidden className="absolute -left-[9999px]">
         <input name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
 
-      {/* step 2: every field below is natively disabled (not focusable, not submitted, not validated) until accepted */}
-      <fieldset
-        disabled={!accepted}
-        aria-describedby={accepted ? undefined : "gate-hint"}
-        className={cn("min-w-0 space-y-3 transition-opacity", !accepted && "opacity-50")}
-      >
-        <Field label="Puppy of interest">
-          <select name="puppy" required defaultValue="" className={cn(fieldClasses, "text-ink/80")}>
-            <option value="" disabled>
-              Select a puppy&hellip;
+      <Field label="Puppy of interest">
+        <select name="puppy" required defaultValue="" className={cn(inputClasses, "text-ink/80")}>
+          <option value="" disabled>
+            Select a puppy&hellip;
+          </option>
+          {puppies.map(({ id, name }) => (
+            <option key={id} value={name}>
+              {name}
             </option>
-            {puppies.map(({ id, name }) => (
-              <option key={id} value={name}>
-                {name}
-              </option>
-            ))}
-            <option value={undecidedPuppy}>{undecidedPuppy}</option>
-          </select>
+          ))}
+          <option value={undecidedPuppy}>{undecidedPuppy}</option>
+        </select>
+      </Field>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Field label="Full name">
+          <input
+            name="full_name"
+            type="text"
+            required
+            minLength={2}
+            maxLength={100}
+            autoComplete="name"
+            className={inputClasses}
+          />
         </Field>
-
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-          <Field label="Full name">
-            <input
-              name="full_name"
-              type="text"
-              required
-              minLength={2}
-              maxLength={100}
-              autoComplete="name"
-              className={fieldClasses}
-            />
-          </Field>
-          <Field label="Email">
-            <input
-              name="email"
-              type="email"
-              required
-              maxLength={200}
-              autoComplete="email"
-              className={fieldClasses}
-            />
-          </Field>
-        </div>
-
+        <Field label="Email">
+          <input name="email" type="email" required maxLength={200} autoComplete="email" className={inputClasses} />
+        </Field>
         <Field label="Phone">
           <input
             name="phone"
@@ -244,48 +227,105 @@ export function ContractForm({ puppies }: { puppies: { id: string; name: string 
             minLength={7}
             maxLength={30}
             autoComplete="tel"
-            className={fieldClasses}
+            className={inputClasses}
           />
         </Field>
-
-        <Field label="Delivery address">
+        <Field label="Agreed price ($)" optional>
           <input
-            name="delivery_address"
+            name="agreed_price"
             type="text"
-            required
-            maxLength={300}
-            autoComplete="street-address"
-            placeholder="Street, city, state, ZIP, or “Pickup”"
-            className={fieldClasses}
+            inputMode="numeric"
+            maxLength={12}
+            placeholder="e.g. 2500"
+            className={inputClasses}
           />
         </Field>
+      </div>
 
-        <SignaturePad
-          signed={!!signature}
-          invalid={missingSignature && !signature}
-          disabled={!accepted}
-          onChange={(png) => {
-            setSignature(png);
-            setMissingSignature(false);
-          }}
+      <Field label="Delivery address">
+        <input
+          name="delivery_address"
+          type="text"
+          required
+          maxLength={300}
+          autoComplete="street-address"
+          placeholder="Street, city, state, ZIP"
+          className={inputClasses}
         />
-        <input type="hidden" name="signature" value={signature} />
+      </Field>
 
-        {formError && (
-          <p role="alert" className="text-sm font-medium text-red-700">
-            {formError}
-          </p>
-        )}
+      <div className="grid gap-5 sm:grid-cols-2">
+        <Radios legend="Shipping option" name="shipping_option" options={shippingOptions} />
+        <Radios legend="Payment method" name="payment_method" options={paymentMethods} />
+      </div>
 
-        <button
-          type="submit"
-          disabled={pending}
-          className={cn(buttonVariants({ size: "lg" }), "h-12 w-full text-base")}
-        >
-          {pending ? "Submitting…" : "Sign & Submit Contract"}
-          {!pending && <ArrowRight className="size-4" />}
-        </button>
+      <div className="rounded-xl bg-cream p-5">
+        <h3 className="font-display text-xl font-bold text-ink">Terms &amp; Conditions</h3>
+        <div className="mt-3 space-y-4">
+          {terms.map(({ title, items }) => (
+            <div key={title}>
+              <h4 className="text-sm font-bold text-ink">{title}</h4>
+              <ul className="mt-1.5 space-y-1.5 text-sm text-ink/75">
+                {items.map(({ label, text }) => (
+                  <li key={label}>
+                    <span className="font-semibold text-ink">{label}:</span> {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <fieldset className="min-w-0">
+        <legend className={labelClasses}>
+          Accept Terms &amp; Conditions? {star}
+        </legend>
+        <div className="flex gap-6">
+          {[
+            ["yes", "Yes"],
+            ["no", "No"],
+          ].map(([value, label]) => (
+            <label key={value} className="flex items-center gap-2.5 text-sm text-ink/80">
+              <input
+                type="radio"
+                name="accepted"
+                value={value}
+                required
+                onChange={() => setProblem("")}
+                className="size-4 shrink-0 accent-gold"
+              />
+              {label}
+            </label>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-ink/60">Signing below confirms your agreement to these terms.</p>
       </fieldset>
+
+      <SignaturePad
+        signed={!!signature}
+        invalid={problem === "signature" && !signature}
+        onChange={(png) => {
+          setSignature(png);
+          setProblem("");
+        }}
+      />
+      <input type="hidden" name="signature" value={signature} />
+
+      {formError && (
+        <p role="alert" className="text-sm font-medium text-red-700">
+          {formError}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending}
+        className={cn(buttonVariants({ size: "lg" }), "h-12 w-full rounded-full text-base")}
+      >
+        {pending ? "Submitting…" : "Sign & Submit Contract"}
+        {!pending && <ArrowRight className="size-4" />}
+      </button>
     </form>
   );
 }

@@ -3,7 +3,7 @@
 -- Paste this WHOLE file into the Supabase SQL editor and click Run. It is safe to run more than once: it never deletes
 -- rows, and everything it creates is skipped or replaced if it already exists (the one thing it removes is the retired
 -- puppy date-of-birth and color columns, in STEP 3). Do NOT also run the individual files in supabase/migrations; this
--- file already contains all of them (20260923 .. 20260926).
+-- file already contains all of them (20260923 .. 20260927).
 --
 -- Order of events: run this file, create your login (Authentication > Users > Add user), turn off public sign-ups
 -- (Authentication > Sign In / Providers > "Allow new users to sign up" off), then make that user an admin (see
@@ -15,7 +15,7 @@
 
 begin;
 
--- STEP 1 - Contract signatures (used by /contract) ------------------------------------------------------------------
+-- STEP 1 - Contract signatures (used by /puppy-contract) ------------------------------------------------------------------
 
 create table if not exists public.contract_signatures (
   id uuid primary key default gen_random_uuid(),
@@ -30,6 +30,12 @@ create table if not exists public.contract_signatures (
   -- PNG data URL of the drawn signature
   signature text not null check (signature like 'data:image/png;base64,%' and char_length(signature) <= 150000)
 );
+
+-- Puppy Contract fields (20260927). Nullable: rows signed before the Puppy Contract never had them. Skipped if present.
+alter table public.contract_signatures
+  add column if not exists agreed_price integer check (agreed_price is null or agreed_price between 0 and 1000000),
+  add column if not exists shipping_option text check (shipping_option is null or shipping_option in ('door_step', 'airport')),
+  add column if not exists payment_method text check (payment_method is null or payment_method in ('zelle', 'cash_app', 'chime', 'apple_pay'));
 
 alter table public.contract_signatures enable row level security;
 

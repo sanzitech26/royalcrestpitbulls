@@ -20,7 +20,7 @@ export const navLinks = [
   { label: "About Us", href: "/about" },
   { label: "Testimonials", href: "/testimonials" },
   { label: "Health Guarantee", href: "/health-guarantee" },
-  { label: "Contract", href: "/contract" },
+  { label: "Puppy Contract", href: "/puppy-contract" },
   { label: "FAQ", href: "/faq" },
   { label: "Contact", href: "/contact" },
 ];

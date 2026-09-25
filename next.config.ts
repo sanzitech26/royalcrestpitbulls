@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
       ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/**" }]
       : [],
   },
+  // the page used to live at /contract; keep old links and bookmarks working
+  async redirects() {
+    return [{ source: "/contract", destination: "/puppy-contract", permanent: true }];
+  },
 };
 
 export default nextConfig;

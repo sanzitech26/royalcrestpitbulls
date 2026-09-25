@@ -15,7 +15,7 @@ const columns = [
   },
   {
     title: "Support",
-    links: pick("/testimonials", "/health-guarantee", "/contract", "/faq", "/contact"),
+    links: pick("/testimonials", "/health-guarantee", "/puppy-contract", "/faq", "/contact"),
   },
 ];
 
@@ -124,7 +124,10 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-4 px-6 py-5 text-xs text-white/50 md:flex-row md:justify-between">
           <p>&copy; {new Date().getFullYear()} RoyalCrest Pitbulls. All rights reserved.</p>
-          <nav aria-label="Legal" className="flex items-center gap-6">
+          <nav aria-label="Legal" className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link href="/return-refund-policy" className={linkClasses}>
+              Return &amp; Refund Policy
+            </Link>
             <Link href="/privacy" className={linkClasses}>
               Privacy Policy
             </Link>

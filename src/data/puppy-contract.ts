@@ -6,7 +6,7 @@ export type TermsGroup = { title: string; items: { label: string; text: string }
 
 // Saved with every signature so we know which text was agreed to. Bump both when the wording changes.
 // (Short on purpose: the column allows 20 characters. Rows signed before the Puppy Contract carry the refund-policy version.)
-export const termsVersion = "pc-2026-09";
+export const termsVersion = "pc-2026-09b"; // b: 30-day money-back guarantee removed from the terms box
 export const lastUpdated = "September 2026";
 
 // "Puppy of interest" choice for someone who hasn't picked one (shared by the form and its server action)
@@ -83,10 +83,6 @@ export const terms: TermsGroup[] = [
       {
         label: "Rehoming Option",
         text: "If the buyer needs to give up the dog, the seller should be notified first, giving them the first option to resume full ownership and find a new home for the dog.",
-      },
-      {
-        label: "Money-Back Guarantee",
-        text: "The buyer has a 30-day money-back guarantee, with a full refund if they are not satisfied with the dog or have difficulties bonding with it.",
       },
       {
         label: "Transfer Approval",

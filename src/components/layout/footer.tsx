@@ -27,7 +27,6 @@ const contact = [
 const headingClasses = "text-xs font-bold tracking-[0.2em] text-gold-light uppercase";
 const linkClasses = "transition-colors hover:text-gold-light";
 
-// ponytail: /privacy and /terms don't exist yet, so those two links 404 until the pages are written
 export function Footer() {
   return (
     <footer className="border-t border-white/10 bg-charcoal text-white">
